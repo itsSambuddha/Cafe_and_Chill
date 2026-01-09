@@ -30,3 +30,16 @@
   - app/layout.tsx (created/updated layout shell)
 - Result: Project uses a shared layout with header/footer; Aceternity UI is initialized.
 - Next: Implement proper home page hero using Aceternity components + Framer Motion.
+
+## Step 5 – shadcn base for UI ecosystem
+
+- Date: 2026-01-10
+- Goal: Initialize shadcn/ui as the base for Kibo / Origin / MVPBlocks.
+- Commands:
+  - npx shadcn@latest init
+- Expected result:
+  - components.json created/updated in shadcn format.
+  - components/ui directory scaffolded.
+- Next:
+  - Confirm dev server works.
+  - Then start building the homepage hero using one UI pattern (Origin/MVPBlocks style) on top of shadcn primitives.
