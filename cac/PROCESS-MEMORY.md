@@ -43,3 +43,17 @@
 - Next:
   - Confirm dev server works.
   - Then start building the homepage hero using one UI pattern (Origin/MVPBlocks style) on top of shadcn primitives.
+
+## Step – Landing layout modularization
+
+- Date: 2026-01-10
+- Goal: Modularize landing into Navbar, Hero, Footer components.
+- Files added:
+  - components/landing/Navbar.tsx
+  - components/landing/Footer.tsx
+  - components/landing/Hero.tsx
+- Files edited:
+  - app/layout.tsx (use Navbar + Footer)
+  - app/page.tsx (simple wrapper calling Hero)
+- Result: Production-grade structure for the landing page with a clean root page.
+- Next: Create empty shells for /menu, /reservations, /contact with their own segmented components.

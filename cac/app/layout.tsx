@@ -1,11 +1,17 @@
 import "./globals.css";
-import type { Metadata } from "next";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
+import type { Metadata } from "next";
+import { Poppins } from "next/font/google";
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
 
 export const metadata: Metadata = {
   title: "Coffee & Chill",
-  description: "Premium cafe website for Coffee & Chill",
+  description: "Cozy cafe and restaurant in Shillong",
 };
 
 export default function RootLayout({
@@ -15,12 +21,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-coffee-dark text-chill-light">
-        <div className="flex min-h-screen flex-col">
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </div>
+      <body className={poppins.className}>
+        <Navbar />
+        {children}
+        <Footer />
       </body>
     </html>
   );
