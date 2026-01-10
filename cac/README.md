@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+# Cafe & Chill (CaC) App
 
-First, run the development server:
+## Authentication & RBAC System
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+This project now includes a full Authentication system using Firebase, MongoDB, and Next.js App Router.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Setup Instructions
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Environment Variables**:
+   Create or update `.env.local` with the following:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```bash
+   # Firebase Client (Get these from Firebase Console -> Project Settings)
+   NEXT_PUBLIC_FIREBASE_API_KEY=...
+   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+   NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
+   NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
+   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
+   NEXT_PUBLIC_FIREBASE_APP_ID=...
+   NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=...
 
-## Learn More
+   # Firebase Admin (Secure)
+   # NOTE: Private Key must handle newlines correctly.
+   FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxx@...
+   FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n..."
 
-To learn more about Next.js, take a look at the following resources:
+   # MongoDB
+   MONGODB_URI=mongodb+srv://...
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   # SMTP (For Staff Welcome Emails)
+   SMTP_HOST=smtp.gmail.com
+   SMTP_PORT=587
+   SMTP_USERNAME="Your Name"
+   SMTP_EMAIL="your-email@gmail.com"
+   SMTP_APP_PASSWORD="app-specific-password"
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   # App Config
+   NEXT_PUBLIC_APP_URL=http://localhost:3000
+   
+   # Admin Configuration
+   # Comma-separated list of emails that should automatically become Admins
+   ADMIN_EMAIL=admin@cafeandchill.com,owner@cafeandchill.com
+   ```
 
-## Deploy on Vercel
+2. **Roles & Permissions**:
+   - **Admin**: Full access to `/admin/*`. Can approve/reject staff.
+   - **Staff**: Access to `/staff/*`. Can record sales.
+   - **Customer**: Default role (if not staff). Currently no specific dashboard.
+   - **Status**: Users start as `pending`. Admins must approve them in `/admin/staff`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. **Development**:
+   - Run `npm run dev`
+   - Login at `/login`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Features
+- **Login/Signup**: Email/Password, Google, Apple (Configured via Firebase Console).
+- **Admin Dashboard**: Staff management, sales overview.
+- **Staff POS**: Quick sales entry with UPI QR code (`public/upi/cafe-and-chill-gpay-qr.png`).
+- **Email Notifications**: Automated via Nodemailer on staff approval.

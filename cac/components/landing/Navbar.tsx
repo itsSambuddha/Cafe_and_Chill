@@ -3,12 +3,17 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase-client";
 import { ShoppingBag, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/components/providers/AuthProvider";
 
 export function Navbar() {
     const [open, setOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const { mongoUser } = useAuth();
+    const isAdmin = mongoUser?.role === 'admin';
 
     useEffect(() => {
         const handleScroll = () => {
@@ -42,14 +47,36 @@ export function Navbar() {
                     <NavLink href="/menu">Menu</NavLink>
                     <NavLink href="/about">About</NavLink>
                     <NavLink href="/#visit">Visit</NavLink>
+                    {mongoUser && (
+                        <NavLink href={mongoUser.role === 'admin' ? '/admin' : '/staff'}>
+                            Dashboard
+                        </NavLink>
+                    )}
                 </nav>
 
                 {/* right: actions */}
                 <div className="flex items-center gap-3">
-                    {/* login (desktop) */}
-                    <button className="hidden rounded-full border border-coffee-900/10 bg-white/50 px-5 py-2 text-xs font-semibold text-coffee-900 transition hover:bg-coffee-900 hover:text-white md:inline-flex">
-                        Login
-                    </button>
+                    {/* login / user (desktop) */}
+                    {mongoUser ? (
+                        <div className="hidden md:flex items-center gap-3">
+                            <span className="text-xs font-semibold text-coffee-900 border border-coffee-200 bg-coffee-50 px-3 py-1.5 rounded-full">
+                                {mongoUser.role === 'admin' ? 'Admin' : 'Staff'}
+                            </span>
+                            <button
+                                onClick={() => signOut(auth)}
+                                className="rounded-full border border-coffee-900/10 bg-white/50 px-5 py-2 text-xs font-semibold text-coffee-900 transition hover:bg-red-50 hover:text-red-700 hover:border-red-200"
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    ) : (
+                        <Link
+                            href="/login"
+                            className="hidden rounded-full border border-coffee-900/10 bg-white/50 px-5 py-2 text-xs font-semibold text-coffee-900 transition hover:bg-coffee-900 hover:text-white md:inline-flex"
+                        >
+                            Login
+                        </Link>
+                    )}
 
                     {/* mobile menu toggle */}
                     <button
@@ -106,15 +133,33 @@ export function Navbar() {
                     <MobileNavLink href="/#visit" onClick={() => setOpen(false)}>
                         Visit
                     </MobileNavLink>
+                    {mongoUser && (
+                        <MobileNavLink href={mongoUser.role === 'admin' ? '/admin' : '/staff'} onClick={() => setOpen(false)}>
+                            Dashboard
+                        </MobileNavLink>
+                    )}
                 </nav>
 
                 <div className="mt-auto">
-                    <button
-                        className="w-full rounded-full bg-coffee-900 py-3 text-sm font-medium text-white transition hover:bg-coffee-800"
-                        onClick={() => setOpen(false)}
-                    >
-                        Login
-                    </button>
+                    {mongoUser ? (
+                        <button
+                            onClick={() => {
+                                signOut(auth);
+                                setOpen(false);
+                            }}
+                            className="flex w-full items-center justify-center rounded-full bg-red-50 border border-red-100 py-3 text-sm font-medium text-red-700 transition hover:bg-red-100"
+                        >
+                            Logout ({mongoUser.role})
+                        </button>
+                    ) : (
+                        <Link
+                            href="/login"
+                            className="flex w-full items-center justify-center rounded-full bg-coffee-900 py-3 text-sm font-medium text-white transition hover:bg-coffee-800"
+                            onClick={() => setOpen(false)}
+                        >
+                            Login
+                        </Link>
+                    )}
                 </div>
             </aside>
         </header>
