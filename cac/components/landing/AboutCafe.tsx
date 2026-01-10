@@ -6,9 +6,12 @@ import { ArrowRight, Sparkles } from "lucide-react";
 
 export function AboutCafe() {
     return (
-        <section className="relative overflow-hidden bg-coffee-50 py-24 md:py-32">
-            {/* Decorative gradient blob */}
-            <div className="pointer-events-none absolute -left-20 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-coffee-100 opacity-50 blur-3xl" />
+        <section className="relative overflow-hidden bg-white py-24 md:py-32">
+            {/* Decorative gradient blob matching Hero */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+                <div className="absolute right-0 top-1/2 h-[60vh] w-[60vh] -translate-y-1/2 translate-x-1/4 rounded-full bg-[radial-gradient(circle_at_center,_rgba(120,53,15,0.08),_transparent_70%)] blur-3xl opacity-60" />
+                <div className="absolute left-0 bottom-0 h-96 w-96 -translate-x-1/4 translate-y-1/4 rounded-full bg-coffee-100/40 blur-3xl" />
+            </div>
 
             <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 md:grid-cols-2 md:items-center md:gap-20 md:px-10">
 

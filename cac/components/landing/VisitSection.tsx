@@ -1,34 +1,37 @@
+// components/landing/VisitSection.tsx
+import { cn } from "@/lib/utils";
+
 export function VisitSection() {
-  return (
-    <section className="mx-auto max-w-6xl px-6 pb-20 md:px-10">
-      <div className="grid gap-8 rounded-2xl border border-border bg-card/70 p-6 md:grid-cols-3">
-        <div>
-          <h2 className="text-lg font-semibold tracking-tight">Visit us</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Coffee &amp; Chill · Shillong
-          </p>
-        </div>
+    return (
+        <section className="mx-auto max-w-6xl px-6 pb-20 md:px-10" id="visit">
+            <div className="grid gap-8 rounded-3xl border border-coffee-200 bg-white/60 p-8 shadow-sm backdrop-blur-sm md:grid-cols-3">
+                <div>
+                    <h2 className="text-xl font-semibold tracking-tight text-coffee-900">Visit us</h2>
+                    <p className="mt-2 text-sm text-coffee-800/80">
+                        Cafe &amp; Chill &middot; Shillong
+                    </p>
+                </div>
 
-        <div className="space-y-2 text-xs text-muted-foreground">
-          <div>
-            <div className="font-medium text-foreground">Timings</div>
-            <p>Open daily · 7:00 AM – 9:30 PM</p>
-          </div>
-          <div>
-            <div className="font-medium text-foreground">Address</div>
-            <p>Exact location details will be added here.</p>
-          </div>
-        </div>
+                <div className="space-y-4 text-sm text-coffee-800/80">
+                    <div>
+                        <div className="font-semibold text-coffee-900">Timings</div>
+                        <p>Open daily &middot; 7:00 AM &ndash; 9:30 PM</p>
+                    </div>
+                    <div>
+                        <div className="font-semibold text-coffee-900">Address</div>
+                        <p>Police Bazaar, Shillong, Meghalaya 793001</p>
+                    </div>
+                </div>
 
-        <div className="flex flex-col gap-2 text-xs text-muted-foreground">
-          <button className="rounded-full bg-foreground px-4 py-2 text-xs font-medium text-background">
-            Get directions
-          </button>
-          <button className="rounded-full border border-border px-4 py-2 text-xs font-medium text-foreground">
-            Call / WhatsApp
-          </button>
-        </div>
-      </div>
-    </section>
-  );
+                <div className="flex flex-col gap-3">
+                    <button className="w-full rounded-full bg-coffee-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-coffee-800">
+                        Get directions
+                    </button>
+                    <button className="w-full rounded-full border border-coffee-200 bg-transparent px-4 py-3 text-sm font-medium text-coffee-900 transition hover:bg-coffee-50 hover:border-coffee-300">
+                        Call / WhatsApp
+                    </button>
+                </div>
+            </div>
+        </section>
+    );
 }
