@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import { useCanvasFrames } from "@/hooks/use-canvas-frames";
-import { MotionValue } from "framer-motion";
+import type { MotionValue } from "framer-motion";
 
 interface HeroAnimationProps {
   scrollYProgress: MotionValue<number>;
@@ -12,7 +12,6 @@ export function HeroAnimation({ scrollYProgress }: HeroAnimationProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isMobile, setIsMobile] = useState(true);
 
-  // Detect mobile to switch to auto-play mode
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
@@ -22,33 +21,30 @@ export function HeroAnimation({ scrollYProgress }: HeroAnimationProps) {
 
   const imagesLoaded = useCanvasFrames(
     canvasRef,
-    240, // Total frames in your sequence
-    "/Landing/Hero/sequence", // Path to folder
+    240,
+    "/Landing/Hero/sequence",
     isMobile,
     scrollYProgress
   );
 
   return (
-    <div className="relative h-[40vh] w-full max-w-[500px] md:h-[600px] md:w-[600px]">
-      
-      {/* Loading Spinner */}
+    <div className="relative flex w-full items-center justify-center">
+      {/* loader */}
       {!imagesLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-200 border-t-coffee-700" />
+        <div className="absolute inset-0 z-10 flex items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-200 border-t-[hsl(25,40%,35%)]" />
         </div>
       )}
 
-      {/* Canvas Styles Explanation:
-         mix-blend-multiply: Makes the white background of JPGs transparent against the white page.
-         mask-image: Softens the hard square edges of the canvas container.
-      */}
+      {/* canvas with heavy feathered mask */}
       <canvas
         ref={canvasRef}
-        width={600}
-        height={600}
-        className="h-full w-full object-contain"
+        width={900}
+        height={900}
+        className="h-[48vh] w-full max-w-[620px] md:h-[680px] md:max-w-[680px] object-contain"
         style={{
           mixBlendMode: "multiply",
+          // UPDATED: 'closest-side' ensures the fade hits the edge perfectly prevents the "box" look
           maskImage: "radial-gradient(closest-side, black 80%, transparent 100%)",
           WebkitMaskImage: "radial-gradient(closest-side, black 80%, transparent 100%)",
         }}
