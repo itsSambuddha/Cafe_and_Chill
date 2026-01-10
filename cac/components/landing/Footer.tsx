@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Facebook, Instagram, Twitter, MapPin, Phone, Clock } from "lucide-react";
 
 export function Footer() {
@@ -38,7 +39,15 @@ export function Footer() {
                     {/* Brand */}
                     <div className="max-w-xs space-y-4">
                         <Link href="/" className="inline-block">
-                            <span className="text-xl font-bold tracking-tight text-white">Cafe &amp; Chill</span>
+                            <div className="relative h-36 w-36 overflow-hidden rounded-full mb-2">
+                                <Image
+                                    src="/assets/logo1.png"
+                                    alt="Coffee & Chill Logo"
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
+                            <span className="text-xl font-bold tracking-tight text-white">Coffee &amp; Chill</span>
                         </Link>
                         <p className="text-coffee-300/80 text-xs leading-relaxed">
                             Crafted with care, served with love. Experience the finest coffee and vibrant atmosphere in the heart of Shillong.
@@ -91,8 +100,8 @@ export function Footer() {
 
                 {/* Bottom Bar: Copyright */}
                 <div className="mt-12 pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-coffee-400/60">
-                    <p>&copy; {currentYear} Cafe &amp; Chill. All rights reserved.</p>
-                    <p>Designed & Developed by Sam.</p>
+                    <p>&copy; {currentYear} Coffee &amp; Chill. All rights reserved.</p>
+                    <p>Designed & Developed by Sam. All Dev rights reserved</p>
                 </div>
             </div>
 

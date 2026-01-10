@@ -13,6 +13,9 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Coffee & Chill",
   description: "Cozy cafe and restaurant in Shillong",
+  icons: {
+    icon: '/assets/logo.png',
+  },
 };
 
 export default function RootLayout({

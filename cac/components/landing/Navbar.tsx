@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase-client";
 import { ShoppingBag, Menu, X } from "lucide-react";
@@ -35,9 +36,16 @@ export function Navbar() {
             <div className="mx-auto flex max-w-6xl items-center justify-between px-6 md:px-10">
                 {/* left: logo */}
                 <Link href="/" className="flex items-center gap-2 group">
-                    <span className="h-2.5 w-2.5 rounded-full bg-coffee-600 transition-transform group-hover:scale-110" />
+                    <div className="relative h-16 w-16 overflow-hidden rounded-full transition-transform group-hover:scale-110">
+                        <Image
+                            src="/assets/logo1.png"
+                            alt="Coffee & Chill Logo"
+                            fill
+                            className="object-cover"
+                        />
+                    </div>
                     <span className="text-lg font-semibold tracking-tight text-coffee-900 md:text-xl">
-                        Cafe &amp; Chill
+                        Coffee &amp; Chill
                     </span>
                 </Link>
 
