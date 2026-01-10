@@ -20,7 +20,7 @@ export function HeroAnimation({ scrollYProgress }: HeroAnimationProps) {
   }, []);
 
   const imagesLoaded = useCanvasFrames(
-    canvasRef,
+    canvasRef as React.RefObject<HTMLCanvasElement>,
     240,
     "/Landing/Hero/sequence",
     isMobile,

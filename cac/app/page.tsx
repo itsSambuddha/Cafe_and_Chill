@@ -1,10 +1,15 @@
-  
 import { Hero } from "@/components/landing/Hero";
+import { FeaturedMenu } from "@/components/landing/FeaturedMenu";
+import { AboutCafe } from "@/components/landing/AboutCafe";
+import { VisitSection } from "@/components/landing/VisitSection";
 
 export default function HomePage() {
   return (
-    <div className="bg-coffee-dark text-chill-light">
+    <main className="bg-background text-foreground">
       <Hero />
-    </div>
+      <FeaturedMenu />
+      <AboutCafe />
+      <VisitSection />
+    </main>
   );
 }
