@@ -1,201 +1,245 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
-  motion,
-  useScroll,
-  useTransform,
-  useSpring,
+    motion,
+    useScroll,
+    useTransform,
+    useSpring,
+    useMotionValue,
+    animate,
 } from "framer-motion";
 import {
-  FlaskConical,
-  Coffee,
-  Clock,
-  Sparkles,
-  ChevronDown,
+    FlaskConical,
+    Coffee,
+    Clock,
+    Sparkles,
+    ChevronDown,
 } from "lucide-react";
 import { HeroAnimation } from "@/components/landing/HeroAnimation";
+import { HeroFeatures } from "@/components/landing/HeroFeatures";
+
 
 export function Hero() {
-  const containerRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  });
+    // Mouse Parallax State
+    const mouseX = useMotionValue(0);
+    const mouseY = useMotionValue(0);
 
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001,
-  });
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            // Normalize mouse coordinates (-1 to 1)
+            const x = (e.clientX / window.innerWidth) * 2 - 1;
+            const y = (e.clientY / window.innerHeight) * 2 - 1;
+            mouseX.set(x);
+            mouseY.set(y);
+        };
+        window.addEventListener("mousemove", handleMouseMove);
+        return () => window.removeEventListener("mousemove", handleMouseMove);
+    }, [mouseX, mouseY]);
 
-  // Parallax for background title
-  const titleY = useTransform(smoothProgress, [0, 1], ["0%", "18%"]);
+    // Smoothed mouse values
+    const springConfig = { damping: 25, stiffness: 150 };
+    const smoothMouseX = useSpring(mouseX, springConfig);
+    const smoothMouseY = useSpring(mouseY, springConfig);
 
-  // Story text animations
-  const text1Opacity = useTransform(smoothProgress, [0, 0.2], [1, 0]);
-  const text1Y = useTransform(smoothProgress, [0, 0.2], [0, -20]);
 
-  const text2Opacity = useTransform(
-    smoothProgress,
-    [0.25, 0.35, 0.55, 0.65],
-    [0, 1, 1, 0]
-  );
-  const text2Scale = useTransform(smoothProgress, [0.25, 0.65], [0.92, 1.06]);
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start start", "end end"],
+    });
 
-  const text3Opacity = useTransform(smoothProgress, [0.7, 0.85], [0, 1]);
-  const text3Y = useTransform(smoothProgress, [0.7, 0.85], [20, 0]);
+    const smoothProgress = useSpring(scrollYProgress, {
+        stiffness: 120, // Faster scroll response
+        damping: 25,
+        restDelta: 0.001,
+    });
 
-  // Sidebar fade and mobile hint fade
-  const sideOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
-  const hintOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
+    // Unified Progress (Desktop: Scroll | Mobile: Auto-Loop)
+    const activeProgress = useMotionValue(0);
+    const [isMobile, setIsMobile] = useState(false);
 
-  return (
-    <main
-      ref={containerRef}
-      className="relative bg-white md:h-[320vh]"
-    >
-      {/* sticky viewport */}
-      <div className="sticky top-0 flex h-screen flex-col overflow-hidden">
-        {/* background glow + subtle diagonal */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0"
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener("resize", checkMobile);
+        return () => window.removeEventListener("resize", checkMobile);
+    }, []);
+
+    useEffect(() => {
+        if (isMobile) {
+            // Mobile: Infinite Auto-Loop (0 -> 1)
+            const controls = animate(activeProgress, 1, {
+                duration: 8,
+                ease: "linear",
+                repeat: Infinity,
+                repeatType: "mirror", // Ping-pong for smooth continuity
+                repeatDelay: 1
+            });
+            return () => controls.stop();
+        } else {
+            // Desktop: Sync with Scroll
+            const unsubscribe = smoothProgress.on("change", (v) => activeProgress.set(v));
+            return () => unsubscribe();
+        }
+    }, [isMobile, smoothProgress, activeProgress]);
+
+    // Animations linked to activeProgress
+    const titleY = useTransform(activeProgress, [0, 1], ["0%", "25%"]);
+
+    // Parallax layers for background elements
+    const layer1X = useTransform(smoothMouseX, [-1, 1], [-20, 20]);
+    const layer1Y = useTransform(smoothMouseY, [-1, 1], [-20, 20]);
+
+    const layer2X = useTransform(smoothMouseX, [-1, 1], [30, -30]);
+    const layer2Y = useTransform(smoothMouseY, [-1, 1], [30, -30]);
+
+
+    // Text phases
+    const text1Opacity = useTransform(activeProgress, [0, 0.15], [1, 0]);
+    const text1Y = useTransform(activeProgress, [0, 0.15], [0, -40]);
+
+    const text2Opacity = useTransform(activeProgress, [0.2, 0.3, 0.55, 0.65], [0, 1, 1, 0]);
+    const text2Scale = useTransform(activeProgress, [0.2, 0.65], [0.95, 1.05]);
+
+    const text3Opacity = useTransform(activeProgress, [0.7, 0.85], [0, 1]);
+    const text3Y = useTransform(activeProgress, [0.7, 0.85], [40, 0]);
+
+    return (
+        <main
+            ref={containerRef}
+            className="relative bg-white md:h-[320vh]"
         >
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-[60vh] w-[60vh] rounded-full bg-[radial-gradient(circle_at_center,_rgba(120,53,15,0.16),_transparent_70%)] blur-2xl" />
-          </div>
-          <div className="absolute -inset-x-40 -top-40 h-64 rotate-[-7deg] bg-gradient-to-r from-white via-[rgba(120,53,15,0.04)] to-transparent" />
-        </div>
+            <div className="sticky top-0 flex h-screen flex-col overflow-hidden">
 
-        {/* parallax background title */}
-        <motion.div
-          style={{ y: titleY }}
-          className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"
-        >
-          <h1 className="select-none whitespace-nowrap text-[16vw] font-light leading-none tracking-tighter text-black/5">
-            Signature Product
-          </h1>
-        </motion.div>
+                {/* Living Background */}
+                <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+                    {/* Ambient Glow */}
+                    <motion.div
+                        style={{ x: layer1X, y: layer1Y }}
+                        className="absolute inset-0 flex items-center justify-center opacity-60"
+                    >
+                        <div className="h-[70vh] w-[70vh] rounded-full bg-[radial-gradient(circle_at_center,_rgba(120,53,15,0.12),_transparent_70%)] blur-3xl" />
+                    </motion.div>
 
-        {/* main content */}
-        <div className="relative z-10 flex h-full w-full flex-col items-center justify-center px-6 md:px-10">
-          {/* storytelling text */}
-          <div className="absolute top-[14%] z-20 h-28 w-full text-center md:top-[18%]">
-            {/* 1: setup – what you think a latte is */}
-            <motion.div
-              style={{ opacity: text1Opacity, y: text1Y }}
-              className="absolute inset-x-0"
-            >
-              <p className="text-xl font-semibold tracking-tight text-coffee-800/90 md:text-2xl">
-                It looks like a simple latte.
-              </p>
-            </motion.div>
-
-            {/* 2: reveal – what’s actually happening inside the cup */}
-            <motion.div
-              style={{ opacity: text2Opacity, scale: text2Scale }}
-              className="absolute inset-x-0"
-            >
-              <h2 className="text-3xl font-bold tracking-tight text-coffee-800 md:text-5xl">
-                Inside, it&apos;s coffee and milk, precisely layered.
-              </h2>
-            </motion.div>
-
-            {/* 3: statement – what the video is doing */}
-            <motion.div
-              style={{ opacity: text3Opacity, y: text3Y }}
-              className="absolute inset-x-0"
-            >
-              <p className="text-base font-medium tracking-wide text-coffee-800/80 md:text-lg">
-                Every layer, slowed just enough to see.
-              </p>
-            </motion.div>
-          </div>
-
-          {/* hero animation area (cup dissection) */}
-          <div className="mt-10 flex w-full justify-center md:mt-0">
-            <HeroAnimation scrollYProgress={smoothProgress} />
-          </div>
-
-          {/* sidebar UI (desktop) */}
-          <motion.div
-            style={{ opacity: sideOpacity }}
-            className="pointer-events-none absolute inset-0 mx-auto hidden h-full w-full max-w-7xl md:block"
-          >
-            {/* left info block */}
-            <div className="pointer-events-auto absolute left-6 top-1/2 w-64 -translate-y-1/2 lg:left-10">
-              <div className="mb-4 inline-flex items-center gap-2 text-xs font-medium text-coffee-800">
-                <Sparkles className="h-4 w-4" />
-                <span>Inside the cup</span>
-              </div>
-              <p className="mb-6 text-sm leading-relaxed text-gray-500">
-                This isn&apos;t just a hero shot of a drink. It&apos;s a breakdown of
-                what happens when espresso meets milk — every layer separated,
-                every swirl slowed down so you can design the experience as
-                carefully as the recipe.
-              </p>
-              <button className="rounded-full bg-black px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800">
-                See the layers
-              </button>
-            </div>
-
-            {/* right specs block */}
-            <div className="absolute right-6 top-[18%] bottom-[18%] flex flex-col items-end justify-between lg:right-10">
-              {/* stamp-style badge */}
-              <div className="pointer-events-auto">
-                <div className="flex h-24 w-24 items-center justify-center rounded-full border border-black/10 bg-white shadow-xl shadow-black/15 rotate-3">
-                  <div className="relative flex h-20 w-20 items-center justify-center rounded-full border border-dashed border-coffee-800/60 text-[10px] uppercase tracking-[0.18em] text-coffee-900">
-                    <span className="text-center leading-tight">
-                      Future
-                      <br />
-                      Signature
-                      <br />
-                      Product
-                    </span>
-                  </div>
+                    {/* Dynamic Shape */}
+                    <motion.div
+                        style={{ x: layer2X, y: layer2Y }}
+                        className="absolute -right-40 -top-40 h-96 w-96 rotate-12 rounded-full bg-coffee-50/50 blur-3xl"
+                    />
                 </div>
-              </div>
 
-              {/* spec pills – tied to what the video shows */}
-              <div className="flex flex-col items-end gap-3">
-                <Badge icon={FlaskConical} text="Layered extraction · espresso" />
-                <Badge icon={Coffee} text="Milk, crema, and foam separated" />
-                <Badge icon={Clock} text="A few seconds slowed into a story" />
-              </div>
-            </div>
-          </motion.div>
+                {/* Huge Parallax Title */}
+                <motion.div
+                    style={{ y: titleY, x: layer1X }}
+                    className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-30 mix-blend-multiply"
+                >
+                    <h1 className="select-none whitespace-nowrap text-[18vw] font-bold leading-none tracking-tighter text-coffee-100/80">
+                        CRAFT
+                    </h1>
+                </motion.div>
 
-          {/* mobile scroll hint */}
-          <motion.div
-            style={{ opacity: hintOpacity }}
-            className="absolute bottom-10 text-gray-400 md:hidden"
-          >
-            <div className="flex flex-col items-center gap-1 text-xs">
-              <span>Scroll</span>
-              <ChevronDown className="animate-bounce" />
+                {/* Center Stage */}
+                <div className="relative z-10 flex h-full w-full flex-col items-center justify-center px-6 md:px-10 pb-32">
+
+                    {/* Scrolling Narrative */}
+                    <div className="absolute top-[15%] z-20 h-32 w-full text-center md:top-[18%] pointer-events-none">
+
+                        {/* Phase 1 */}
+                        <motion.div style={{ opacity: text1Opacity, y: text1Y }} className="absolute inset-x-0">
+                            <span className="inline-block rounded-full bg-coffee-50 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-coffee-600 mb-4">
+                                The Setup
+                            </span>
+                            <h2 className="text-3xl font-bold tracking-tight text-coffee-900 md:text-5xl lg:text-6xl">
+                                More than just a latte.
+                            </h2>
+                        </motion.div>
+
+                        {/* Phase 2 */}
+                        <motion.div style={{ opacity: text2Opacity, scale: text2Scale }} className="absolute inset-x-0">
+                            <h2 className="text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-coffee-900 to-coffee-600 md:text-6xl lg:text-7xl">
+                                Precision in every layer.
+                            </h2>
+                        </motion.div>
+
+                        {/* Phase 3 */}
+                        <motion.div style={{ opacity: text3Opacity, y: text3Y }} className="absolute inset-x-0">
+                            <p className="text-xl font-medium text-coffee-800/80 md:text-2xl">
+                                We slowed down time so you can taste the details.
+                            </p>
+                        </motion.div>
+                    </div>
+
+                    {/* Hero Animation (The Cup) */}
+                    <div className="mt-12 flex w-full justify-center md:mt-0 scale-75 md:scale-90 transition-transform duration-700">
+                        <HeroAnimation scrollYProgress={activeProgress} />
+                    </div>
+
+                    {/* Floating UI Elements (Desktop) */}
+                    <div className="pointer-events-none absolute inset-0 hidden w-full max-w-7xl mx-auto md:block">
+
+                        {/* Left: Info Card (Interactive) */}
+                        <motion.div
+                            initial={{ opacity: 0, x: -50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.8, ease: "easeOut" }}
+                            className="pointer-events-auto absolute left-0 top-1/2 w-72 -translate-y-1/2 p-6 backdrop-blur-sm rounded-2xl border border-white/40 bg-white/30 hover:bg-white/50 transition-colors duration-300"
+                        >
+                            <div className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-coffee-900">
+                                <Sparkles className="h-4 w-4 text-orange-400" />
+                                <span>Deconstructed</span>
+                            </div>
+                            <p className="mb-6 text-sm leading-relaxed text-coffee-800">
+                                Experience the anatomy of a perfect pour. Espresso, milk, and foam orchestrated in perfect harmony.
+                            </p>
+                        </motion.div>
+
+                        {/* Right: Specs (Interactive) */}
+                        <motion.div
+                            initial={{ opacity: 0, x: 50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+                            className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col items-end gap-3 pointer-events-auto"
+                        >
+                            <Badge icon={FlaskConical} text="Single Origin Espresso" />
+                            <Badge icon={Coffee} text="Steamed Full Cream Milk" />
+                            <Badge icon={Clock} text="28s Extraction Time" />
+                        </motion.div>
+
+                    </div>
+
+                    {/* Scroll Hint (Simplified/Moved or Removed in favor of Marketing?) */}
+                    {/* Let's keep it but maybe smaller or blended? Or remove it if Features takes the space. */}
+                    {/* User said "market/advertize... like a proper business". Features is better. */}
+
+                    <div className="absolute  bottom-0 left-0 right-0 z-30">
+
+                        <HeroFeatures />
+
+                        {/* Subtle Scroll Hint below features */}
+                        <motion.div
+                            animate={{ y: [0, 5, 0], opacity: [0.5, 1, 0.5] }}
+                            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                            className="flex justify-center mt-2"
+                        >
+                            <ChevronDown className="h-4 w-4 text-coffee-400" />
+                        </motion.div>
+                    </div>
+
+                </div>
             </div>
-          </motion.div>
-        </div>
-      </div>
-    </main>
-  );
+        </main>
+    );
 }
 
-function Badge({
-  icon: Icon,
-  text,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  text: string;
-}) {
-  return (
-    <div className="flex items-center gap-3 rounded-full border border-gray-100 bg-white/90 px-4 py-2 text-xs text-gray-700 shadow-sm backdrop-blur-sm">
-      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-coffee-100 text-coffee-900">
-        <Icon className="h-3.5 w-3.5" />
-      </span>
-      <span>{text}</span>
-    </div>
-  );
+function Badge({ icon: Icon, text }: { icon: any; text: string }) {
+    return (
+        <div className="group flex items-center gap-3 rounded-full border border-white/50 bg-white/40 px-5 py-3 text-xs font-medium text-coffee-900 shadow-sm backdrop-blur-md transition-all hover:scale-105 hover:bg-white/60 hover:shadow-md cursor-default">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-coffee-100/50 text-coffee-800 group-hover:bg-coffee-100 group-hover:text-coffee-900 transition-colors">
+                <Icon className="h-3.5 w-3.5" />
+            </span>
+            <span>{text}</span>
+        </div>
+    );
 }
