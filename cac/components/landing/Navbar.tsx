@@ -10,11 +10,14 @@ import { ShoppingBag, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/components/providers/AuthProvider";
 
+import { usePathname } from "next/navigation";
+
 export function Navbar() {
     const [open, setOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const { mongoUser } = useAuth();
     const isAdmin = mongoUser?.role === 'admin';
+    const pathname = usePathname();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -23,6 +26,9 @@ export function Navbar() {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
+
+    // Hide Navbar on Staff pages (POS) to prevent collision with Staff Header
+    if (pathname?.startsWith('/staff')) return null;
 
     return (
         <header

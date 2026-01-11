@@ -3,9 +3,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Facebook, Instagram, Twitter, MapPin, Phone, Clock } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export function Footer() {
     const currentYear = new Date().getFullYear();
+    const pathname = usePathname();
+
+    // Hide Footer on Staff pages
+    if (pathname?.startsWith('/staff')) return null;
 
     return (
         <footer className="relative bg-gradient-to-br from-coffee-950 via-[#3c1e0a] to-[#1a0b02] text-coffee-100 overflow-hidden">
@@ -83,7 +88,9 @@ export function Footer() {
                             <ul className="space-y-3 text-coffee-300">
                                 <li className="flex items-start gap-2.5">
                                     <MapPin className="h-4 w-4 text-coffee-400 shrink-0 mt-0.5" />
-                                    <span>Police Bazar, Shillong<br />Meghalaya 793001</span>
+                                    <a href="https://www.google.com/maps/place/Police+Bazar,+Shillong,+Meghalaya+793001" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                                        Police Bazar, Shillong<br />Meghalaya 793001
+                                    </a>
                                 </li>
                                 <li className="flex items-center gap-2.5">
                                     <Clock className="h-4 w-4 text-coffee-400 shrink-0" />
@@ -91,7 +98,9 @@ export function Footer() {
                                 </li>
                                 <li className="flex items-center gap-2.5">
                                     <Phone className="h-4 w-4 text-coffee-400 shrink-0" />
-                                    <span>+91 98765 43210</span>
+                                    <a href="tel:+916002861294" className="hover:text-white transition-colors">
+                                        +91 60028 61294
+                                    </a>
                                 </li>
                             </ul>
                         </div>

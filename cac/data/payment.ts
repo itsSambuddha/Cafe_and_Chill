@@ -1,5 +1,5 @@
 export const PAYMENT_CONFIG = {
-    upiId: "example@upi", // Change your UPI ID here
+    upiId: "jasvinderkaur98630@oksbi", // Change your UPI ID here
     merchantName: "Cafe & Chill",
-    qrCodePath: "/assets/payment/upi-qr.png" // Place your QR image here
+    qrCodePath: "/assets/payment/upi-qr.jpg" // Place your QR image here
 };

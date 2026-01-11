@@ -12,7 +12,7 @@ export interface ISale {
     items: ISaleItem[];
     totalAmount: number;
     paymentMethod: 'Cash' | 'Card' | 'UPI - GPay' | 'Other';
-    paymentSource: 'manual_upload' | 'gateway';
+    paymentSource: 'manual_upload' | 'gateway' | 'pos';
     notes?: string;
     createdAt: Date;
     updatedAt: Date;
@@ -36,13 +36,18 @@ const SaleSchema = new Schema<ISale>(
         },
         paymentSource: {
             type: String,
-            enum: ['manual_upload', 'gateway'],
+            enum: ['manual_upload', 'gateway', 'pos'],
             default: 'manual_upload'
         },
         notes: { type: String },
     },
     { timestamps: true }
 );
+
+// Prevent Mongoose OverwriteModelError in development
+if (process.env.NODE_ENV === "development") {
+    if (models.Sale) delete models.Sale;
+}
 
 const Sale: Model<ISale> = models.Sale || mongoose.model<ISale>('Sale', SaleSchema);
 

@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BadgePill } from "@/components/ui/badge-pill";
-import { Loader2, Calendar, TrendingUp, IndianRupee } from "lucide-react";
+import { Loader2, Calendar, TrendingUp, IndianRupee, Printer } from "lucide-react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Receipt } from "@/components/staff/Receipt";
+import { useReactToPrint } from "react-to-print";
 
 interface Sale {
     _id: string;
@@ -12,11 +15,20 @@ interface Sale {
     paymentMethod: string;
     notes?: string;
     createdAt: string;
+    items?: any[];
 }
 
 export default function SalesHistoryPage() {
     const [sales, setSales] = useState<Sale[]>([]);
     const [loading, setLoading] = useState(true);
+
+    // Printing State
+    const [selectedSale, setSelectedSale] = useState<Sale | null>(null);
+    const receiptRef = useRef<HTMLDivElement>(null);
+    const handlePrint = useReactToPrint({
+        contentRef: receiptRef,
+        documentTitle: `Bill-${Date.now()}`,
+    } as any);
 
     useEffect(() => {
         async function fetchSales() {
@@ -34,6 +46,17 @@ export default function SalesHistoryPage() {
         }
         fetchSales();
     }, []);
+
+    const onPrintClick = (sale: Sale) => {
+        setSelectedSale(sale);
+        // Cleanest way to wait for state update in a function based flow is to use a flushSync or just a small timeout
+        // But since we are rendering the Receipt hidden, we can just set state and then trigger print after short delay
+        // Or better: use useEffect on selectedSale, but that triggers on every select.
+        // Simple timeout is robust enough for this admin UI.
+        setTimeout(() => {
+            handlePrint();
+        }, 100);
+    };
 
     const totalSales = sales.reduce((acc, sale) => acc + sale.totalAmount, 0);
 
@@ -93,6 +116,7 @@ export default function SalesHistoryPage() {
                                         <th className="px-6 py-4">Amount</th>
                                         <th className="px-6 py-4">Method</th>
                                         <th className="px-6 py-4">Notes</th>
+                                        <th className="px-6 py-4 text-right">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-stone-100">
@@ -123,6 +147,16 @@ export default function SalesHistoryPage() {
                                             <td className="px-6 py-4 text-stone-500 text-xs italic max-w-[200px] truncate">
                                                 {sale.notes || <span className="text-stone-300">-</span>}
                                             </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <Button
+                                                    size="sm"
+                                                    variant="ghost"
+                                                    className="h-8 w-8 p-0 rounded-full hover:bg-stone-100 text-stone-400 hover:text-stone-800"
+                                                    onClick={() => onPrintClick(sale)}
+                                                >
+                                                    <Printer size={16} />
+                                                </Button>
+                                            </td>
                                         </motion.tr>
                                     ))}
                                 </tbody>
@@ -131,6 +165,13 @@ export default function SalesHistoryPage() {
                     )}
                 </CardContent>
             </Card>
+
+            {/* Hidden Receipt for Printing logic */}
+            <div style={{ position: "absolute", top: "-9999px", left: "-9999px" }}>
+                <div id="sales-receipt-content">
+                    <Receipt ref={receiptRef} sale={selectedSale} />
+                </div>
+            </div>
         </div>
     );
 }

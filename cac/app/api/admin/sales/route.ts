@@ -27,6 +27,7 @@ export async function POST(request: Request) {
         const newItem = await Sale.create(body);
         return NextResponse.json(newItem, { status: 201 });
     } catch (error: any) {
+        console.error("Sale Recording Error:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
