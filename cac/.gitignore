@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#handover
+project_handover_brief.md
+
+#memory
+PROCESS-MEMORY.md 

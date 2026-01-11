@@ -15,7 +15,11 @@ const firebaseConfig = {
 let app: FirebaseApp;
 let auth: Auth;
 const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: 'select_account' });
+
 const appleProvider = new OAuthProvider("apple.com");
+appleProvider.addScope('email');
+appleProvider.addScope('name');
 
 function isConfigValid() {
     return !!firebaseConfig.apiKey && firebaseConfig.apiKey !== 'YOUR_API_KEY_HERE';
