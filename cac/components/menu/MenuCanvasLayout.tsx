@@ -207,49 +207,49 @@ function FloatingPlate({
 function getHeroImageForCategory(cat: MenuCategory) {
     switch (cat) {
         case "coffee-hot":
-            return "/assets/menu/coffee-latte-art-01.jpeg";
+            return "/assets/Menu/coffee-latte-art-01.jpeg";
         case "coffee-cold":
-            return "/assets/menu/coffee-cold-01.jpeg";
+            return "/assets/Menu/coffee-cold-01.jpeg";
         case "food":
-            return "/assets/menu/tribal-rice-01.jpeg";
+            return "/assets/Menu/tribal-rice-01.jpeg";
         case "dessert":
-            return "/assets/menu/brownie-01.jpeg";
+            return "/assets/Menu/brownie-01.jpeg";
         case "beverages":
-            return "/assets/menu/mojito-01.jpeg";
+            return "/assets/Menu/mojito-01.jpeg";
         case "special":
         default:
-            return "/assets/menu/cafe-drink-03.jpeg";
+            return "/assets/Menu/cafe-drink-03.jpeg";
     }
 }
 
 function getSupportingImage(cat: MenuCategory, index: number) {
     if (cat === "food") {
         return index === 0
-            ? "/assets/menu/chicken-wings-01.jpeg"
-            : "/assets/menu/butter-toast-01.jpeg";
+            ? "/assets/Menu/chicken-wings-01.jpeg"
+            : "/assets/Menu/butter-toast-01.jpeg";
     }
     if (cat === "dessert") {
         return index === 0
-            ? "/assets/menu/tiramisu-01.jpeg"
-            : "/assets/menu/brownie-01.jpeg";
+            ? "/assets/Menu/tiramisu-01.jpeg"
+            : "/assets/Menu/brownie-01.jpeg";
     }
     if (cat === "coffee-hot") {
         return index === 0
-            ? "/assets/menu/coffee-hot-01.jpeg"
-            : "/assets/menu/coffee-latte-art-01.jpeg";
+            ? "/assets/Menu/coffee-hot-01.jpeg"
+            : "/assets/Menu/coffee-latte-art-01.jpeg";
     }
     if (cat === "coffee-cold") {
         return index === 0
-            ? "/assets/menu/frappe-01.jpeg"
-            : "/assets/menu/cold-brew-01.jpeg";
+            ? "/assets/Menu/frappe-01.jpeg"
+            : "/assets/Menu/cold-brew-01.jpeg";
     }
     if (cat === "beverages") {
         return index === 0
-            ? "/assets/menu/lemon-ice-tea-01.jpeg"
-            : "/assets/menu/lemon-ice-tea-top-01.jpeg";
+            ? "/assets/Menu/lemon-ice-tea-01.jpeg"
+            : "/assets/Menu/lemon-ice-tea-top-01.jpeg";
     }
     // special / default
     return index === 0
-        ? "/assets/menu/cafe-drink-01.jpeg"
-        : "/assets/menu/cafe-drink-02.jpeg";
+        ? "/assets/Menu/cafe-drink-01.jpeg"
+        : "/assets/Menu/cafe-drink-02.jpeg";
 }
