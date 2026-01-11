@@ -25,6 +25,12 @@ function getBezierPoint(t: number, p0: [number, number], p1: [number, number], p
     return [x, y];
 }
 
+// Deterministic random number generator
+function seededRandom(seed: number) {
+    const x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+}
+
 export function SectionSeparator({ orientation = "left", className }: SectionSeparatorProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({
@@ -64,13 +70,26 @@ export function SectionSeparator({ orientation = "left", className }: SectionSep
         const result = [];
         const { p0, p1, p2, p3 } = curvePoints;
 
+        // Base seed difference for orientation so they don't look identical if we had same-orientation sections
+        // (Though arguably we might want a prop for seed if we want them distinct)
+        const baseSeed = orientation === "left" ? 0 : 1000;
+
         for (let i = 0; i < count; i++) {
             const t = i / (count - 1); // 0 to 1
             const [bx, by] = getBezierPoint(t, p0, p1, p2, p3);
 
+            // Seed logic: i + property_offset + baseSeed
+            const r1 = seededRandom(i * 12.34 + baseSeed);
+            const r2 = seededRandom(i * 45.67 + baseSeed);
+            const r3 = seededRandom(i * 78.90 + baseSeed);
+            const r4 = seededRandom(i * 23.45 + baseSeed);
+            const r5 = seededRandom(i * 67.89 + baseSeed);
+            const r6 = seededRandom(i * 90.12 + baseSeed);
+            const r7 = seededRandom(i * 34.56 + baseSeed);
+
             // INCREASED SCATTER for organic "cloud" look
-            const scatterX = (Math.random() - 0.5) * 15; // +/- 7.5%
-            const scatterY = (Math.random() - 0.5) * 30; // +/- 15% (Vertical scatter is nice)
+            const scatterX = (r1 - 0.5) * 15; // +/- 7.5%
+            const scatterY = (r2 - 0.5) * 30; // +/- 15% (Vertical scatter is nice)
 
             // Size Gradient & Layers
             // We want mostly Large/Medium beans, fewer tiny ones.
@@ -80,24 +99,24 @@ export function SectionSeparator({ orientation = "left", className }: SectionSep
             // 0 = Back (Small, Slow, Blurred)
             // 1 = Mid (Medium, Normal)
             // 2 = Front (Big, Fast, Sharp)
-            const layer = Math.random() > 0.7 ? 2 : Math.random() > 0.4 ? 1 : 0;
+            const layer = r3 > 0.7 ? 2 : r3 > 0.4 ? 1 : 0;
 
             let size = 0;
-            if (layer === 2) size = 140 + Math.random() * 40; // 140-180
-            else if (layer === 1) size = 80 + Math.random() * 40; // 80-120
-            else size = 40 + Math.random() * 30; // 40-70
+            if (layer === 2) size = 140 + r4 * 40; // 140-180
+            else if (layer === 1) size = 80 + r4 * 40; // 80-120
+            else size = 40 + r4 * 30; // 40-70
 
             // Apply global gradient influence to size (optional, keeps it organized)
-            size = size * (0.6 + 0.4 * scaleT);
-
             result.push({
                 id: i,
-                x: bx + scatterX,
-                y: by + scatterY,
-                size,
-                rotation: Math.random() * 360,
+                // Rounding to avoid hydration mismatch (Server vs Client float precision)
+                x: Number((bx + scatterX).toFixed(4)),
+                y: Number((by + scatterY).toFixed(4)),
+                size: Number((size * (0.6 + 0.4 * scaleT)).toFixed(4)),
+                rotation: Number((r5 * 360).toFixed(4)),
                 layer, // 0, 1, 2
-                flip: Math.random() > 0.5 ? -1 : 1
+                flip: r6 > 0.5 ? -1 : 1,
+                initialYOffset: Number(((r7 - 0.5) * 50).toFixed(4))
             });
         }
         return result.sort((a, b) => a.layer - b.layer); // Render Back -> Front
@@ -151,7 +170,7 @@ function ParallaxBean({
     bean,
     progress
 }: {
-    bean: { x: number, y: number, size: number, rotation: number, layer: number, flip: number },
+    bean: { x: number, y: number, size: number, rotation: number, layer: number, flip: number, initialYOffset: number },
     progress: MotionValue<number>
 }) {
     // Parallax by Layer
@@ -161,7 +180,9 @@ function ParallaxBean({
     const speed = bean.layer === 2 ? -200 : bean.layer === 1 ? -100 : -30;
 
     // Randomize initial Y slightly so they don't all start synced
-    const initialYOffset = (Math.random() - 0.5) * 50;
+    // const initialYOffset = (Math.random() - 0.5) * 50; 
+    // MOVED to parent to fix Hydration Mismatch (Server vs Client random)
+    const initialYOffset = bean.initialYOffset;
 
     const y = useTransform(progress, [0, 1], [initialYOffset, initialYOffset + speed]);
     const rotate = useTransform(progress, [0, 1], [bean.rotation, bean.rotation + (bean.layer + 1) * 30]);
