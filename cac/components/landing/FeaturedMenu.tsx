@@ -44,15 +44,15 @@ function getCategoryIcon(cat: MenuCategory) {
 function getFeaturedImageForCategory(cat: MenuCategory) {
     switch (cat) {
         case "coffee-hot":
-            return "/assets/menu/coffee-latte-art-01.jpeg";
+            return "/assets/Menu/coffee-latte-art-01.jpeg";
         case "coffee-cold":
-            return "/assets/menu/coffee-cold-01.jpeg";
+            return "/assets/Menu/coffee-cold-01.jpeg";
         case "food":
-            return "/assets/menu/butter-toast-01.jpeg";
+            return "/assets/Menu/butter-toast-01.jpeg";
         case "dessert":
-            return "/assets/menu/brownie-01.jpeg";
+            return "/assets/Menu/brownie-01.jpeg";
         default:
-            return "/assets/menu/cafe-drink-01.jpeg";
+            return "/assets/Menu/cafe-drink-01.jpeg";
     }
 }
 
